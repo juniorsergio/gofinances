@@ -9,13 +9,13 @@ import {
 
 interface TransactionTypeButtonProps extends TouchableOpacityProps {
     title: string,
-    type: 'up' | 'down',
+    type: 'positive' | 'negative',
     isActive: boolean
 }
 
 const icon = {
-    up: 'arrow-up-circle',
-    down: 'arrow-down-circle'
+    positive: 'arrow-up-circle',
+    negative: 'arrow-down-circle'
 }
 
 export function TransactionTypeButton({ title, type, isActive, ...rest }: TransactionTypeButtonProps) {
