@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ThemeProvider } from 'styled-components';
 
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import { Register } from './src/screens/Register/Register';
 
 import theme from './src/global/styles/theme'
@@ -11,6 +11,7 @@ import {
   Poppins_500Medium,
   Poppins_700Bold
 } from '@expo-google-fonts/poppins'
+import { View } from 'react-native';
 
 
 export default function App() {
@@ -20,8 +21,14 @@ export default function App() {
     Poppins_700Bold
   })
 
-  if(!fontsLoaded){
-    return <AppLoading />
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return <View onLayout={onLayoutRootView} />
   }
   
   return (
