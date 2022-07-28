@@ -12,6 +12,8 @@ import {
   Poppins_700Bold
 } from '@expo-google-fonts/poppins'
 import { View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { AppRoutes } from './src/routes/app.routes';
 
 
 export default function App() {
@@ -33,7 +35,9 @@ export default function App() {
   
   return (
     <ThemeProvider theme={theme}>
-      <Register />
+      <NavigationContainer>
+        <AppRoutes />
+      </NavigationContainer>
     </ThemeProvider>
   );
 }
