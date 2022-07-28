@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons'
 import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper'
 
 import { DataListProps } from './Dashboard'
-import { FlatList, FlatListProps } from "react-native";
+import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
 
 export const Container = styled.View`
     flex: 1;
@@ -96,3 +96,10 @@ export const TransactionList = styled(
         paddingBottom: getBottomSpace()
     }
 })``
+
+export const LoadContainer = styled(ActivityIndicator)`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    color: ${({ theme }) => theme.colors.primary};
+`
