@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
+import { ActivityIndicator } from "react-native";
 import styled from "styled-components/native";
 
 export const Container = styled.View`
@@ -51,4 +52,11 @@ export const MonthSelectIcon = styled(Feather)`
 export const Month = styled.Text`
     font-size: ${RFValue(20)}px;
     font-family: ${({ theme }) => theme.fonts.regular};
+`
+
+export const LoadContainer = styled(ActivityIndicator)`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    color: ${({ theme }) => theme.colors.primary};
 `

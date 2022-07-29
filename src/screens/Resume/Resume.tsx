@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'styled-components';
 import { VictoryPie } from 'victory-native'
 import { addMonths, subMonths, format } from 'date-fns'
@@ -18,7 +19,8 @@ import {
     MonthSelect,
     MonthSelectButton,
     MonthSelectIcon,
-    Month
+    Month,
+    LoadContainer
 } from "./styles";
 
 interface TransactionData {
@@ -38,17 +40,23 @@ interface CategoryData {
 }
 
 export function Resume(){
+    const [ isLoading, setIsLoading ] = useState(false)
     const [ selectedDate, setSelectedDate ] = useState(new Date())
     const [ categoryResume, setCategoryResume ] = useState<CategoryData[]>([])
     const theme = useTheme()
-    
+
     function handleDateChange(action: 'next' | 'previous'){
-        (action === 'next')
-            ? setSelectedDate(addMonths(selectedDate, 1))
-            : setSelectedDate(subMonths(selectedDate, 1))
+        if (action === 'next'){
+            setSelectedDate(addMonths(selectedDate, 1))
+        }
+        else {
+            setSelectedDate(subMonths(selectedDate, 1))
+        }
     }
 
     async function loadData(){
+        setIsLoading(true)
+
         const collectionKey = '@gofinances:transactions'
         const response = await AsyncStorage.getItem(collectionKey)
         const responseFormatted = response ? JSON.parse(response) : []
@@ -93,11 +101,12 @@ export function Resume(){
         })
 
         setCategoryResume(totalByCategory)
+        setIsLoading(false)
     }
 
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
         loadData()
-    }, [selectedDate])
+    }, [selectedDate]))
 
     return (
         <Container>
@@ -105,48 +114,50 @@ export function Resume(){
                 <Title>Resumo por categoria</Title>
             </Header>
 
-            <Content
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    flex: 1,
-                    paddingHorizontal: 24,
-                    paddingBottom: useBottomTabBarHeight()
-                }}
-            >
-                <MonthSelect>
-                    <MonthSelectButton onPress={() => handleDateChange('previous')}>
-                        <MonthSelectIcon name='chevron-left' />
-                    </MonthSelectButton>
+            { isLoading ? <LoadContainer size='large' /> :
+                <Content
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{
+                        flex: 1,
+                        paddingHorizontal: 24,
+                        paddingBottom: useBottomTabBarHeight()
+                    }}
+                >
+                    <MonthSelect>
+                        <MonthSelectButton onPress={() => handleDateChange('previous')}>
+                            <MonthSelectIcon name='chevron-left' />
+                        </MonthSelectButton>
 
-                    <Month>{ format(selectedDate, 'MMMM, yyyy', {locale: ptBR}) }</Month>
+                        <Month>{ format(selectedDate, 'MMMM, yyyy', {locale: ptBR}) }</Month>
 
-                    <MonthSelectButton onPress={() => handleDateChange('next')}>
-                        <MonthSelectIcon name='chevron-right' />
-                    </MonthSelectButton>
-                </MonthSelect>
+                        <MonthSelectButton onPress={() => handleDateChange('next')}>
+                            <MonthSelectIcon name='chevron-right' />
+                        </MonthSelectButton>
+                    </MonthSelect>
 
-                <ChartContainer>
-                    <VictoryPie
-                        data={categoryResume}
-                        colorScale={categoryResume.map(category => category.color)}
-                        style={{
-                            labels: { fontSize: 18, fontWeight: 'bold', fill: theme.colors.shape }
-                        }}
-                        labelRadius={50}
-                        x='percent'
-                        y='total'
-                    />
-                </ChartContainer>
+                    <ChartContainer>
+                        <VictoryPie
+                            data={categoryResume}
+                            colorScale={categoryResume.map(category => category.color)}
+                            style={{
+                                labels: { fontSize: 18, fontWeight: 'bold', fill: theme.colors.shape }
+                            }}
+                            labelRadius={50}
+                            x='percent'
+                            y='total'
+                        />
+                    </ChartContainer>
 
-                {categoryResume.map(category => (
-                    <HistoryCard
-                        key={category.name}
-                        title={category.name}
-                        amount={category.totalFormatted}
-                        color={category.color}
-                    />
-                ))}
-            </Content>
+                    {categoryResume.map(category => (
+                        <HistoryCard
+                            key={category.name}
+                            title={category.name}
+                            amount={category.totalFormatted}
+                            color={category.color}
+                        />
+                    ))}
+                </Content>
+            }
         </Container>
     )
 }
