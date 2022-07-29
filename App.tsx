@@ -1,5 +1,7 @@
 import React, { useCallback } from 'react';
 import { ThemeProvider } from 'styled-components';
+import { View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
 import * as SplashScreen from 'expo-splash-screen';
 import 'intl';
@@ -12,10 +14,10 @@ import {
   Poppins_500Medium,
   Poppins_700Bold
 } from '@expo-google-fonts/poppins'
-import { View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+
 import { AppRoutes } from './src/routes/app.routes';
 import { SignIn } from './src/screens/SignIn/SignIn';
+import { AuthProvider } from './src/hooks/auth';
 
 
 export default function App() {
@@ -38,7 +40,9 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <SignIn />
+        <AuthProvider>
+          <SignIn />
+        </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
   );
