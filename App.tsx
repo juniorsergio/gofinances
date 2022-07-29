@@ -14,11 +14,8 @@ import {
   Poppins_700Bold
 } from '@expo-google-fonts/poppins'
 
-import { AuthProvider } from './src/hooks/auth';
+import { AuthProvider, useAuth } from './src/hooks/auth';
 import { Routes } from './src/routes';
-
-import { LogBox } from "react-native";
-LogBox.ignoreLogs([/deprecated/i]);
 
 export default function App() {
   const [ fontsLoaded ] = useFonts({
@@ -33,7 +30,9 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  const { userStorageLoading } = useAuth()
+
+  if (!fontsLoaded || userStorageLoading) {
     return <View onLayout={onLayoutRootView} />
   }
   

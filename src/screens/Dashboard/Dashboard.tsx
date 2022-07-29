@@ -14,6 +14,7 @@ import {
     User,
     UserGreeting,
     UserName,
+    LougoutButton,
     Icon,
     HighlightCards,
     Transactions,
@@ -21,6 +22,7 @@ import {
     TransactionList,
     LoadContainer
 } from "./styles";
+import { useAuth } from "../../hooks/auth";
 
 export interface DataListProps extends TransactionCardProps {
     id: string
@@ -42,7 +44,9 @@ export function Dashboard(){
     const [ data, setData ] = useState<DataListProps[]>([])
     const [ highlightData, setHighlightData ] = useState<HighlightData>({} as HighlightData)
 
-    const collectionKey = '@gofinances:transactions'
+    const { user, signOut } = useAuth()
+
+    const collectionKey = `@gofinances:transactions_user:${user.id}`
 
     function getLastTransactionDate(collections: DataListProps[], type: string){
         const lastTransaction = new Date(
@@ -51,7 +55,11 @@ export function Dashboard(){
             .map(collection => new Date(collection.date).getTime()))
         )
 
-        return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', {month: 'long'})}`
+        if (!lastTransaction.getDate()){
+            return `não encontrada`
+        }
+
+        return `dia ${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', {month: 'long'})}`
     }
 
     async function loadTransactions(){
@@ -105,7 +113,7 @@ export function Dashboard(){
                     style: 'currency',
                     currency: 'BRL'
                 }),
-                lastTransaction: `Última entrada dia ${lastTransactionEntry}`
+                lastTransaction: `Última entrada ${lastTransactionEntry}`
             },
 
             expenses: {
@@ -113,7 +121,7 @@ export function Dashboard(){
                     style: 'currency',
                     currency: 'BRL'
                 }),
-                lastTransaction: `Última entrada dia ${lastTransactionExpense}`
+                lastTransaction: `Última entrada ${lastTransactionExpense}`
             },
 
             total: {
@@ -121,7 +129,7 @@ export function Dashboard(){
                     style: 'currency',
                     currency: 'BRL'
                 }),
-                lastTransaction: totalInterval
+                lastTransaction: lastTransactionExpense === 'não encontrada' ? 'Não há transações' : totalInterval
             }
         })
 
@@ -148,15 +156,17 @@ export function Dashboard(){
                     <Header>
                         <UserWrapper>
                             <UserInfo>
-                                <Photo source={{ uri: 'https://github.com/juniorsergio.png' }} />
+                                <Photo source={{ uri: user.photo }} />
 
                                 <User>
                                     <UserGreeting>Olá, </UserGreeting>
-                                    <UserName>Junior</UserName>
+                                    <UserName>{user.name}</UserName>
                                 </User>
                             </UserInfo>
-
-                            <Icon name="power" />
+                            
+                            <LougoutButton onPress={signOut}>
+                                <Icon name="power" />
+                            </LougoutButton>
                         </UserWrapper>
                     </Header>
 

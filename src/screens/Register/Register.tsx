@@ -22,6 +22,7 @@ import {
     Fields,
     TransactionTypes
  } from "./styles";
+import { useAuth } from "../../hooks/auth";
 
  interface FormData {
     [name: string]: any,
@@ -40,6 +41,7 @@ export function Register(){
     const [ transactionType, setTransactionType] = useState('')
     const [ categoryModalOpen, setCategotyModalOpen ] = useState(false)
 
+    const { user } = useAuth()
     const { navigate }: NavigationProp<ParamListBase> = useNavigation()
 
     const {
@@ -68,7 +70,7 @@ export function Register(){
         }
 
         try {
-            const collectionKey = '@gofinances:transactions'
+            const collectionKey = `@gofinances:transactions_user:${user.id}`
 
             const data = await AsyncStorage.getItem(collectionKey)
             const currentData = data ? JSON.parse(data) : []
