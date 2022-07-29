@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components/native';
 import { View } from 'react-native';
 
 import * as SplashScreen from 'expo-splash-screen';
