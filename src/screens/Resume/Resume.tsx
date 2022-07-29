@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTheme } from 'styled-components';
 import { VictoryPie } from 'victory-native'
 import { addMonths, subMonths, format } from 'date-fns'
@@ -118,7 +118,6 @@ export function Resume(){
                 <Content
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
-                        flex: 1,
                         paddingHorizontal: 24,
                         paddingBottom: useBottomTabBarHeight()
                     }}

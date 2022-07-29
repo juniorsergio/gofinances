@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 
 import * as SplashScreen from 'expo-splash-screen';
 import 'intl';
@@ -15,10 +14,11 @@ import {
   Poppins_700Bold
 } from '@expo-google-fonts/poppins'
 
-import { AppRoutes } from './src/routes/app.routes';
-import { SignIn } from './src/screens/SignIn/SignIn';
 import { AuthProvider } from './src/hooks/auth';
+import { Routes } from './src/routes';
 
+import { LogBox } from "react-native";
+LogBox.ignoreLogs([/deprecated/i]);
 
 export default function App() {
   const [ fontsLoaded ] = useFonts({
@@ -39,11 +39,9 @@ export default function App() {
   
   return (
     <ThemeProvider theme={theme}>
-      <NavigationContainer>
-        <AuthProvider>
-          <SignIn />
-        </AuthProvider>
-      </NavigationContainer>
+      <AuthProvider>
+        <Routes />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

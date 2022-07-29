@@ -1,7 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios'
 
 const { GOOGLE_CLIENT_ID } = process.env
 const { GOOGLE_REDIRECT_URI } = process.env
@@ -34,6 +35,8 @@ const AuthContext = createContext({} as IAuthContextData)
 
 function AuthProvider({ children }: AuthProviderProps){
     const [ user, setUser ] = useState<User>({} as User)
+    const [ userStorageLoading, setUserStorageLoading] = useState(true)
+
     const collectionKey = '@gofinances:user'
 
     async function signInWithGoogle(){
@@ -43,10 +46,13 @@ function AuthProvider({ children }: AuthProviderProps){
 
             const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`
             const { params, type } = await AuthSession.startAsync({ authUrl }) as AuthorizationResponse
+            console.log(params)
 
             if (type === 'success'){
+                console.log(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`)
                 const response  = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`)
                 const userInfo = await response.json()
+                console.log(response)
 
                 const userLogged = {
                     id: userInfo.id,
@@ -89,6 +95,18 @@ function AuthProvider({ children }: AuthProviderProps){
             return new Error(error as string)
         }
     }
+
+    useEffect(() => {
+        async function loadUserStorageDate(){
+            const userStored = await AsyncStorage.getItem(collectionKey)
+            if(userStored){
+                const userLogged = JSON.parse(userStored) as User
+                setUser(userLogged)
+            }
+            setUserStorageLoading(false)
+        }
+        loadUserStorageDate()
+    }, [])
 
     return (
         <AuthContext.Provider value={{
